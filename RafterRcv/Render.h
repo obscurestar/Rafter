@@ -6,12 +6,13 @@
 
 #include "extern.h"
 
-void setEvens(COLOR color)
+void renderRGBS(COLOR color)
 {
   int i;
-  for(i=0;i<NUM_LEDS;i+=2)
+  int space=color.c[3] + 1;
+  for(i=0;i<NUM_LEDS;i+=space)
   {
-    pixel[i].l =color.l;
+    pixel[i].l = color.l;
   }
 }
 

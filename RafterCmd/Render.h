@@ -6,15 +6,6 @@
 
 #include "extern.h"
 
-void setEvens(COLOR color)
-{
-  int i;
-  for(i=0;i<NUM_LEDS;i+=2)
-  {
-    pixel[i].l =color.l;
-  }
-}
-
 //Throws random colors down the strip array
 long randomColor(void) {
   int x;
@@ -40,5 +31,17 @@ long randomColor(void) {
   
   return colormap.l;
 }
+
+
+void renderRGBS(COLOR color)
+{
+  int i;
+  int space=color.c[3] + 1;
+  for(i=0;i<NUM_LEDS;i+=space)
+  {
+    pixel[i].l = color.l;
+  }
+}
+
 
 #endif

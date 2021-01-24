@@ -13,6 +13,7 @@ void CommandAll()
   signed char j=0;
   COLOR col;
   col.l = randomColor();
+  col.c[3] = 1; //Turns on every other lamp.
 
   /*Because the timing is easiest, display in reverse order.
    * Subprocessor 3 2 1 and commander last.
@@ -22,7 +23,7 @@ void CommandAll()
     //Serial.println(j);
     if (j==0)
     {
-       setEvens(col);
+       renderRGBS(col);
        raster_post();
        //delay(500);
     }

@@ -1,7 +1,6 @@
 /*I2C Receiver*/
 
 #include <Wire.h> // Arduino library that enables I2C functionality
-//#include "extern.h"
 #include  "ic2_rcv.h"
 #include "display.h"  //Utilities to write to LED arrays.
 
@@ -38,7 +37,7 @@ void loop()
   if (NEW_EVENT)
   {
     EVENT_COMPLETE = false;
-    setEvens(recv_col);
+    renderRGBS(recv_col);
     raster_post();
     NEW_EVENT = false;
     EVENT_COMPLETE = true;
