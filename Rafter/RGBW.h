@@ -2,19 +2,11 @@
  * A base and sub classes for sending  patterns to the lighting system.
  */
  
-#ifndef PATTERN_H
-#define PATTERN_H
+#ifndef RGBW_H
+#define RGBW_H
 
 #include "extern.h"
-
-class Pattern
-{
-  public:
-  //virtual double getVolume() = 0;
-    virtual void setup() = 0;
-    virtual void render() = 0;
-    virtual void teardown() {};
-};
+#include "pattern.h"
 
 class RGBS : public Pattern
 {
@@ -46,6 +38,10 @@ class RGBS : public Pattern
         }
       }
     }
+    void teardown() {}
+#ifdef  RCVR
+    void receive() {}
+#endif
   public:
     COLOR mColor; 
     byte mOn;
