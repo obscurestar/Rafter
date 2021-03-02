@@ -15,9 +15,7 @@ class Rain : public Pattern
     void setup();
     void render();
     void teardown() {};
-#ifndef CMDR 
-    void receive(int num) {};
-#endif    
+    void receive(int num_bytes);
 
 public:   //public variables.
   int mShiftOdds; //The 1 in n odds of picking a new hue mask.
@@ -69,6 +67,7 @@ void Rain::render()  //Called from main loop().
 #ifdef CMDR
     if ( askAllCompleteMask( SIGNAL1 ) )
     {
+      Serial.println("AllComp");
       if (!random(mShiftOdds))
       {
         mHueMask = pickHueMask();
@@ -76,9 +75,24 @@ void Rain::render()  //Called from main loop().
     }
 #else
     //For rcvs set doneness flag for when cmdr calls to ask status.
+    Serial.println("Comp");
     loop_status |= SIGNAL1;
 #endif
   }
+}
+
+void Rain::receive(int num_bytes)
+{
+#ifdef RCVR
+  struct BODY b;
+  if (num_bytes != sizeof(b))
+  {
+    Serial.println("ERR");
+  }
+  receiveBytes(num_bytes, (char *)&b);
+  mHueMask = b.hueMask;
+  //TODO delay len from delayLen;
+#endif
 }
 
 byte Rain::pickHueMask()
@@ -166,8 +180,8 @@ byte Rain::walkPixels()
 //Tell the receivers a new generation has begun.
 void Rain::sendHueChange()
 {
-
-  
+  sprintf(s_buff,"Hue: %o", mHueMask);
+  Serial.println(s_buff);
   struct MSG msg;
   msg.h.id = pattern_id;
   msg.h.num = sizeof(struct BODY);

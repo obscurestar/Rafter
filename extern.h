@@ -4,7 +4,7 @@
 #include "pattern.h"
 
 /* SET HERE, if CMDR is set true, this is the command module, else it is a RECIEVER MODULE */
-#define CMDR /*Comment out for recievers*/
+//#define CMDR /*Comment out for recievers*/
 #ifndef CMDR
 #define RCVR
 #endif
@@ -28,7 +28,14 @@ enum {
     TEARDOWN_COMPLETE = 1 << 3, //Teardown completed.
     SIGNAL1 = 1 << 4,         //Signal defined by Pattern subclass.
   };
-  
+
+enum {
+    //DANGER!  This enum MUST be the same order as the Pattern array
+    P_SOLID,    //Solid color
+    P_RANDOMS,   //Random colors
+    P_RAIN
+};
+
 extern const byte NUM_RECV;     //Number of receivers to address
 extern const int SDI;           //Serial PIN Red wire (not the red 5v wire) 
 extern const int CKI;           //Clock PIN Green wire
@@ -39,10 +46,15 @@ extern Pattern* pattern[];
 extern byte pattern_id;
 extern byte new_pattern_id;
 extern byte loop_status;
+extern const int S_BUFF_LEN;
+extern char s_buff[];
+
+extern int readNum(int &result);
 
 #ifdef RCVR
 void RecvCallbackFunc(int Press);
 void ReqCallbackFunc();
+int receiveBytes(int num, byte* dest);
 #endif
 
 #endif

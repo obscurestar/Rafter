@@ -12,9 +12,7 @@ class Pattern
     virtual void setup() = 0;
     virtual void render() = 0;
     virtual void teardown() = 0;
-#ifndef CMDR
-    virtual void receive(int num) = 0;
-#endif    
+    virtual void receive(int num_bytes) = 0;
 };
 
 
