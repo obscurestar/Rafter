@@ -30,19 +30,20 @@ class Solid : public Pattern
 
 void Solid::setup()
 {
-#ifdef CMDR
   int i;
   int b;
   for(i=0; i<3; ++i)
   {
     readNum(b);
-    mColor.c[i]=b;
+    mColor.c[i]=(byte)b;
+    Serial.println(mColor.c[i]);
   }
   for(i=0;i<NUM_LEDS;++i)
   {
     pixel[i].l = mColor.l;
   }
-
+  
+#ifdef CMDR
   struct MSG msg;
   msg.h.id = P_SOLID;
   msg.h.num = sizeof(struct BODY);

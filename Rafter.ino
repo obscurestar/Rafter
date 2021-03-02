@@ -63,9 +63,13 @@ void setup()
 int readNum(int &result)
 {
   int index=0;
+  int dat;
   while (Serial.available() > 0 && index < (S_BUFF_LEN - 1))
   {
-    s_buff[index] = Serial.read();
+    dat=Serial.read();
+
+    s_buff[index] = (unsigned char)dat;
+    //s_buff[index] = Serial.read();
     if ( isdigit(s_buff[index]) )
     {
       index++;
@@ -93,8 +97,7 @@ void handleInputs()
   if (Serial.available() > 0) {
     // read the incoming byte:
     dat = Serial.read();
-    sprintf(s_buff,"Pat: %c",dat);
-    Serial.println(s_buff);
+
     switch(dat){
       case 'R':   //Rain
         new_pattern_id = P_RAIN;
@@ -111,7 +114,11 @@ void handleInputs()
         break;
       default:    //Bail out.
         return;
+
     }
+    sprintf(s_buff,"Pat: %c %d %d",dat, pattern_id, new_pattern_id);
+    Serial.println(s_buff);
+
   }  
 }
 /*Main loop**************************************************************************************/
@@ -120,20 +127,14 @@ void loop()
   
   static byte loop_status = FIRST_RUN;
 
+  handleInputs();
+  
   if (new_pattern_id != pattern_id)
   {
     loop_status |= PATTERN_CHANGE;
+    Serial.println("ch");
   }
-  
-  /*TODO 
-  Patterns are children of class Pattern. 
-  we must select a pattern and params here. 
-  If the pattern is changed and this is not loop-step 0 pattern's teardown() is  run.
-  The new pattern then gets to run its setup routine followed by next run
-  Patterns control the message info they outside signalling info.
-  */
 
-  handleInputs();
   if ( loop_status & PATTERN_CHANGE & ~FIRST_RUN )
   {
     Serial.println("td");
@@ -148,7 +149,7 @@ void loop()
   }
   
   flushSerial();   //Do this here.
-  
+  Serial.println("fl");
   pattern [ pattern_id ]->render();
 
   raster_post();

@@ -40,6 +40,8 @@ void raster_post (void) {
   //Write the forward pixels
   for(i = 0; i < set_size ; ++i) 
   {
+   // sprintf(s_buff,"P[%d] = %d %d %d",i,pixel[i].c[0],pixel[i].c[1],pixel[i].c[2]);
+   // Serial.println(s_buff);
     write_LED(i, pixel[i].l); //24 bits of color data
   }
   
@@ -51,7 +53,7 @@ void raster_post (void) {
   
   //Pull clock low to put strip into reset/post mode
   digitalWrite(CKI, LOW);
-  delayMicroseconds(500); //Wait for 500us to go into reset
+  delayMicroseconds(750); //Wait for 500us to go into reset
 }
 
 #endif
