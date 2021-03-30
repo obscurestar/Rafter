@@ -35,14 +35,16 @@ void Solid::setup()
   int b;
   for(i=0; i<3; ++i)
   {
-    readNum(b);
-    mColor.c[i]=b;
+//TESTING    readNum(b);
+//    mColor.c[i]=(byte)b;
+    mColor.c[i] = random(255);
+    Serial.println(mColor.c[i]);
   }
   for(i=0;i<NUM_LEDS;++i)
   {
     pixel[i].l = mColor.l;
   }
-
+  
   struct MSG msg;
   msg.h.id = P_SOLID;
   msg.h.num = sizeof(struct BODY);

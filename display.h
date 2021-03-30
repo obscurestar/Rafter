@@ -51,7 +51,7 @@ void raster_post (void) {
   
   //Pull clock low to put strip into reset/post mode
   digitalWrite(CKI, LOW);
-  delayMicroseconds(500); //Wait for 500us to go into reset
+  delayMicroseconds(750); //Wait for 500us to go into reset
 }
 
 #endif
