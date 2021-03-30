@@ -14,7 +14,9 @@ class Solid : public Pattern
     void setup();
     void render() {};
     void teardown() {};
+#ifdef RCVR
     void receive(int num_bytes);
+#endif
   public:
     COLOR mColor;
   private:
@@ -30,6 +32,7 @@ class Solid : public Pattern
 
 void Solid::setup()
 {
+#ifdef CMDR
   int i;
   int b;
   for(i=0; i<3; ++i)
@@ -54,9 +57,9 @@ void Solid::setup()
 #endif
 }
 
+#ifdef RCVR
 void Solid::receive(int num_bytes)
 {
-#ifdef RCVR
   struct BODY b;
   if (num_bytes != sizeof(b))
   {
@@ -64,7 +67,7 @@ void Solid::receive(int num_bytes)
   }
   receiveBytes(num_bytes, (char *)&b);
   mColor.l = b.col.l;
-#endif
 }
+#endif
 
 #endif

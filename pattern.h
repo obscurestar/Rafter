@@ -12,7 +12,9 @@ class Pattern
     virtual void setup() = 0;
     virtual void render() = 0;
     virtual void teardown() = 0;
+#ifdef RCVR
     virtual void receive(int num_bytes) = 0;
+#endif
 };
 
 

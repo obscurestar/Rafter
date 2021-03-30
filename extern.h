@@ -3,11 +3,6 @@
 
 #include "pattern.h"
 
-/* SET HERE, if CMDR is set true, this is the command module, else it is a RECIEVER MODULE */
-#define CMDR /*Comment out for recievers*/
-#ifndef CMDR
-#define RCVR
-#endif
 
 typedef union COLOR_T
 {

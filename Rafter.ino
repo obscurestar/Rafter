@@ -1,23 +1,40 @@
-/*I2C Commander*/
-
+/*Rafter Lighting system  1.0*/
 #include <Wire.h> //Arduino library that enables I2C functionality
-//#include <Vector>
+
+/********************CONFIGURATION BLOCK***************/
+/* CMDR and RCVR_ID need to be set accordingly depending on which
+ *  member of the system we're uploading code to.
+ *  TODO: Could store the RCVR_ID in progmem and not require the 
+ *  RCVR_ID config.
+ */
+//#define CMDR /*Comment out this line for recievers*/
+
+#ifndef CMDR
+#define RCVR
+/*If this unit is a receiver, set the RCVR_ID to a sequential number
+ * starting with 1 as the first receiver.  0 appears to be reserved.
+ */
+byte RCVR_ID = 1;
+#endif
+/*****************END CONFIGURATION BLOCK**************/
+const int SDI = 2;          //Serial PIN Red wire (not the red 5v wire) 
+const int CKI = 3;          //Clock PIN Green wire
+
+#ifdef CMDR
+#include "i2c_cmd.h"
+#else
+#include "i2c_rcv.h"
+#endif 
+
 #include "display.h"  //Utilities to write to LED arrays.
 #include "pattern.h"
 #include "Rain.h"
 #include "Solid.h"
 #include "Randoms.h"
-#include "Render.h"   //The  algorithms that  set  the LED colors.
-
-#ifdef RCVR
-#include "i2c_rcv.h"
-byte RCVR_ID = 0; //Change this ID for each reciever when uploading.
-#endif 
+#include "render.h"   //The  algorithms that  set  the LED colors.
 
 //Globals
 const byte NUM_RECV=3;      //Number of receivers to address
-const int SDI = 2;          //Serial PIN Red wire (not the red 5v wire) 
-const int CKI = 3;          //Clock PIN Green wire
 const int NUM_LEDS=160;     //Num LEDS on strip 2x the raster len.
 const int S_BUFF_LEN=80;    //Serial buffer length
 
@@ -41,22 +58,22 @@ void setup()
   memset(pixel,NUM_LEDS, sizeof(COLOR));
     
   randomSeed(analogRead(0));  //Seed randomizer by grabbing whatever noise is on analog pin 0 at the moment.
-#ifdef CMDR
-  Wire.begin(); // join I2C bus (address here is optional for master)
-#else
-  Wire.begin(RCVR_ID);                                // Join I2C bus as a listener
-  Wire.onReceive(RecvCallbackFunc);                  // The commander commands us
-  Wire.onRequest(ReqCallbackFunc);                   // The commander asks us to report.
-#endif
 
   Serial.begin(19200);
 
 #ifdef CMDR
+  Wire.begin(); // join I2C bus (address here is optional for master)
+  
   Serial.println("CMDR");
 #else
+  Wire.begin(RCVR_ID);                                // Join I2C bus as a listener
+  Wire.onReceive(RecvCallbackFunc);                  // The commander commands us
+  Wire.onRequest(ReqCallbackFunc);                   // The commander asks us to report.
+
   sprintf(s_buff,"RCVR %d",RCVR_ID);
   Serial.println(s_buff);
 #endif
+
   pattern_id = new_pattern_id = P_SOLID;  //Start simple. 
 }
 

@@ -10,11 +10,19 @@
 
 int receiveBytes(int num, byte* dest)
 {
-  int i;
-  for(i=0;i<num;++i)
+  int i=0;
+  byte c;
+  Serial.println("-------");
+  while( Wire.available() )
   {
-    dest[i] = Wire.read();
+    if (i >= num) break;
+    c = Wire.read();
+    Serial.print(c);
+    dest[i] = (byte)c;
+    ++i;
   }
+  Serial.println("\n------");
+  return i;
 }
 
 /*Function/Event call****************************************************************************/

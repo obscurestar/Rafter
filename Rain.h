@@ -15,7 +15,9 @@ class Rain : public Pattern
     void setup();
     void render();
     void teardown() {};
+#ifdef RCVR
     void receive(int num_bytes);
+#endif
 
 public:   //public variables.
   int mShiftOdds; //The 1 in n odds of picking a new hue mask.
@@ -81,9 +83,9 @@ void Rain::render()  //Called from main loop().
   }
 }
 
+#ifdef RCVR
 void Rain::receive(int num_bytes)
 {
-#ifdef RCVR
   struct BODY b;
   if (num_bytes != sizeof(b))
   {
@@ -92,8 +94,8 @@ void Rain::receive(int num_bytes)
   receiveBytes(num_bytes, (char *)&b);
   mHueMask = b.hueMask;
   //TODO delay len from delayLen;
-#endif
 }
+#endif
 
 byte Rain::pickHueMask()
 {

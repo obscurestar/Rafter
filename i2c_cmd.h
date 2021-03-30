@@ -11,14 +11,11 @@ void sendAll(int msgLen, byte* msg)   //Sends the message to all receivers.
 {
   //unsigned char *b = (unsigned char *)&a;
   byte rcv=0;
-  int i;
-  for (rcv=0;rcv<NUM_RECV;rcv++)
+  for (rcv=1;rcv<=NUM_RECV;rcv++)
   {
     Wire.beginTransmission(rcv);
-    for (i=0;i<msgLen;++i)
-    {
-      Wire.write(msg[i]);
-    }
+    Wire.beginTransmission(rcv);
+    Wire.write(msg,msgLen);
     Wire.endTransmission();
   }
 }
@@ -32,7 +29,7 @@ byte askAllCompleteMask( byte mask )
 
   for (rcv=0;rcv<NUM_RECV;rcv++)
   {
-    Wire.requestFrom(rcv, 1);
+    Wire.requestFrom((int)rcv, 1);
     while( Wire.available() )
     {
       if ( ! ( mask & Wire.read() ) ) 

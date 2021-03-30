@@ -14,8 +14,10 @@ class Randoms : public Pattern
     void setup();
     void render();
     void teardown() {};
+#ifdef RCVR
     void receive(int num_bytes){};
- };
+#endif
+};
 
 void Randoms::setup()
 {
