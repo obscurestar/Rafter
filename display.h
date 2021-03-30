@@ -40,6 +40,8 @@ void raster_post (void) {
   //Write the forward pixels
   for(i = 0; i < set_size ; ++i) 
   {
+   // sprintf(s_buff,"P[%d] = %d %d %d",i,pixel[i].c[0],pixel[i].c[1],pixel[i].c[2]);
+   // Serial.println(s_buff);
     write_LED(i, pixel[i].l); //24 bits of color data
   }
   

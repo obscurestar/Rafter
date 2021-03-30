@@ -30,7 +30,6 @@ class Solid : public Pattern
 
 void Solid::setup()
 {
-#ifdef CMDR
   int i;
   int b;
   for(i=0; i<3; ++i)
