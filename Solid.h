@@ -37,10 +37,8 @@ void Solid::setup()
   int b;
   for(i=0; i<3; ++i)
   {
-//TESTING    readNum(b);
-//    mColor.c[i]=(byte)b;
-    mColor.c[i] = random(255);
-    Serial.println(mColor.c[i]);
+    readNum(b);
+    mColor.c[i]=(byte)b;
   }
   
   struct MSG msg;

@@ -14,7 +14,7 @@
 /*If this unit is a receiver, set the RCVR_ID to a sequential number
  * starting with 1 as the first receiver.  0 appears to be reserved.
  */
-byte RCVR_ID = 1;
+byte RCVR_ID = 3;
 #endif
 /*****************END CONFIGURATION BLOCK**************/
 const int SDI = 2;          //Serial PIN Red wire (not the red 5v wire) 
@@ -121,6 +121,7 @@ void handleInputs()
         break;
       case 'c':   //Solid color
         new_pattern_id = P_SOLID;
+        loop_status |= PATTERN_CHANGE; //Force a change
         break;
       case 'r':   //Random
         new_pattern_id = P_RANDOMS;
@@ -139,9 +140,6 @@ void handleInputs()
 /*Main loop**************************************************************************************/
 void loop() 
 {
-  
-  static byte loop_status = FIRST_RUN;
-
 #ifdef CMDR
   handleInputs();
 #endif
@@ -180,5 +178,5 @@ void loop()
 
   //Clear first run and pattern change status
   loop_status &= ~ (FIRST_RUN|PATTERN_CHANGE);
-  delay(500);
+//  delay(500);
 }
