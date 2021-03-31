@@ -12,16 +12,13 @@ int receiveBytes(int num, byte* dest)
 {
   int i=0;
   byte c;
-  Serial.println("-------");
   while( Wire.available() )
   {
     if (i >= num) break;
     c = Wire.read();
-    Serial.print(c);
     dest[i] = (byte)c;
     ++i;
   }
-  Serial.println("\n------");
   return i;
 }
 
@@ -36,6 +33,8 @@ void RecvCallbackFunc(int Press)
     //TODO clear some or all status here.
     loop_status |= PATTERN_CHANGE;
     new_pattern_id  = hdr.id;
+    sprintf(s_buff,"New pat: %d", new_pattern_id);
+    Serial.println(s_buff);
   }
   pattern[ hdr.id ]->receive(hdr.num);
 }

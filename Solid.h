@@ -12,7 +12,7 @@ class Solid : public Pattern
 {
   public:
     void setup();
-    void render() {};
+    void render();
     void teardown() {};
 #ifdef RCVR
     void receive(int num_bytes);
@@ -42,19 +42,25 @@ void Solid::setup()
     mColor.c[i] = random(255);
     Serial.println(mColor.c[i]);
   }
-  for(i=0;i<NUM_LEDS;++i)
-  {
-    pixel[i].l = mColor.l;
-  }
   
   struct MSG msg;
   msg.h.id = P_SOLID;
   msg.h.num = sizeof(struct BODY);
   msg.b.col = mColor;
-  
+  sprintf(s_buff,"RGB: %d %d %d", mColor.c[0], mColor.c[1], mColor.c[2]);
+  Serial.println(s_buff);
   sendAll( sizeof(struct MSG), (byte *)&msg );  //Notify all the receivers of the change.
 
 #endif
+}
+
+void Solid::render()
+{
+  int i;
+  for(i=0;i<NUM_LEDS;++i)
+  {
+    pixel[i].l = mColor.l;
+  }
 }
 
 #ifdef RCVR
@@ -67,6 +73,8 @@ void Solid::receive(int num_bytes)
   }
   receiveBytes(num_bytes, (char *)&b);
   mColor.l = b.col.l;
+  sprintf(s_buff,"RCVD RGB: %d %d %d", mColor.c[0], mColor.c[1], mColor.c[2]);
+  Serial.println(s_buff);
 }
 #endif
 

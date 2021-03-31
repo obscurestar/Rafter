@@ -7,7 +7,7 @@
  *  TODO: Could store the RCVR_ID in progmem and not require the 
  *  RCVR_ID config.
  */
-#define CMDR /*Comment out this line for recievers*/
+//#define CMDR /*Comment out this line for recievers*/
 
 #ifndef CMDR
 #define RCVR
@@ -142,38 +142,43 @@ void loop()
   
   static byte loop_status = FIRST_RUN;
 
+#ifdef CMDR
   handleInputs();
-  
+#endif
+
+  //New pattern_id may be changed by handleInputs() in cmdr or 
   if (new_pattern_id != pattern_id)
   {
     loop_status |= PATTERN_CHANGE;
-    Serial.println("ch");
   }
 
+  //Don't do teardown on first run to avoid confusing receivers.
   if ( loop_status & PATTERN_CHANGE & ~FIRST_RUN )
   {
-    Serial.println("td");
     pattern[ pattern_id ]->teardown();
   }
-  pattern_id = new_pattern_id;
- 
+
   if ( loop_status & PATTERN_CHANGE )
   {
-    Serial.println("su");
-    pattern[ pattern_id ]->setup();  
+    Serial.println("do setup");
+    //Teardown complete we're now on the new pattern.
+    //WARN potential bug here in recvrs if interrupt timing sucks.
+    pattern_id = new_pattern_id;
+ 
+    pattern[ pattern_id ]->setup();
   }
-  
+
+#ifdef CMDR
   flushSerial();   //Do this here.
+#endif
+
+  //Whatever this pattern is going to do to generate its display, do it.
   pattern [ pattern_id ]->render();
 
+  //Send rendered frame to the LEDs
   raster_post();
 
-#ifdef RCVR
+  //Clear first run and pattern change status
   loop_status &= ~ (FIRST_RUN|PATTERN_CHANGE);
-#else
-  //All Debug below here.
-  pattern_id=P_RAIN;
-  loop_status &= ~ (FIRST_RUN);
-#endif
   delay(500);
 }
