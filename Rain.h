@@ -44,20 +44,25 @@ private:
 private:  //class private variables
   byte mHueMask;  //Which bits are active on this iteration.
   bool mDirty;    //Set to true when any RGB not in current set is set for any pixel in chain.
+  bool mDelay;    //Just put this here to avoid namespace pollution.
 };
 
 Rain::Rain()
 {
   mHueMask = 0; //Default to OFF.
+  mShiftOdds=200;  //TODO  GET from ui.
+  mDelay=50;
 }
 
 void Rain::setup()
 {
   //TODO get shift odds from inputs
   //Setup message to  remotes.
-  mShiftOdds=200;  //TODO  GET from ui.
+  loop_status &= ~SIGNAL1;  //Set loop status to init.
   mDirty=false;
+#ifdef CMDR
   mHueMask = pickHueMask();
+#endif
 }
 
 void Rain::render()  //Called from main loop().
@@ -69,7 +74,7 @@ void Rain::render()  //Called from main loop().
 #ifdef CMDR
     if ( askAllCompleteMask( SIGNAL1 ) )
     {
-      Serial.println("AllComp");
+      Serial.println("All Comp");
       if (!random(mShiftOdds))
       {
         mHueMask = pickHueMask();
@@ -77,7 +82,7 @@ void Rain::render()  //Called from main loop().
     }
 #else
     //For rcvs set doneness flag for when cmdr calls to ask status.
-    Serial.println("Comp");
+    Serial.println("Self Comp");
     loop_status |= SIGNAL1;
 #endif
   }
@@ -93,7 +98,8 @@ void Rain::receive(int num_bytes)
   }
   receiveBytes(num_bytes, (char *)&b);
   mHueMask = b.hueMask;
-  //TODO delay len from delayLen;
+  mDelay = b.delayLen;
+  loop_status &= ~SIGNAL1;  //Set loop status to init.
 }
 #endif
 
@@ -182,13 +188,13 @@ byte Rain::walkPixels()
 //Tell the receivers a new generation has begun.
 void Rain::sendHueChange()
 {
-  sprintf(s_buff,"Hue: %o", mHueMask);
+  sprintf(s_buff,"Snd Hue: %d, dly: %d", mHueMask, mDelay);
   Serial.println(s_buff);
   struct MSG msg;
   msg.h.id = pattern_id;
   msg.h.num = sizeof(struct BODY);
   msg.b.hueMask = mHueMask;
-  msg.b.delayLen = 50; //TODO not a hardcoded delay in  future!
+  msg.b.delayLen = mDelay;
   
   sendAll( sizeof(struct MSG), (byte *)&msg );  //Notify all the receivers of the change.
 }

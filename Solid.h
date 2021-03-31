@@ -32,6 +32,7 @@ class Solid : public Pattern
 
 void Solid::setup()
 {
+  loop_delay=0;   //Set master loop timing.
 #ifdef CMDR
   int i;
   int b;

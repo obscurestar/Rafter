@@ -43,6 +43,7 @@ extern byte new_pattern_id;
 extern byte loop_status;
 extern const int S_BUFF_LEN;
 extern char s_buff[];
+extern int loop_delay;
 
 extern int readNum(int &result);
 

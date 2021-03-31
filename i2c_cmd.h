@@ -33,6 +33,8 @@ byte askAllCompleteMask( byte mask )
     while( Wire.available() )
     {
       if ( ! ( mask & Wire.read() ) ) 
+        sprintf(s_buff,"Unit %d !comp", rcv);
+        Serial.println(s_buff);
         return false;
     }
   }

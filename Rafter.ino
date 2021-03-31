@@ -42,6 +42,7 @@ byte pattern_id;
 byte new_pattern_id;
 byte loop_status = FIRST_RUN | PATTERN_CHANGE;
 char s_buff[S_BUFF_LEN];    //Serial buffer
+int loop_delay=0;           //How long to display a frame.
 
 //std::vector<Pattern> pattern;  MUST be same order as Pattern Enum in externs!
 Pattern* pattern[]  = { new Solid(), new Randoms, new Rain };
@@ -63,6 +64,7 @@ void setup()
 
 #ifdef CMDR
   Wire.begin(); // join I2C bus (address here is optional for master)
+  //Wire.setClock(400000);   #4x speed boost but write good code first.
   
   Serial.println("CMDR");
 #else
@@ -178,5 +180,5 @@ void loop()
 
   //Clear first run and pattern change status
   loop_status &= ~ (FIRST_RUN|PATTERN_CHANGE);
-//  delay(500);
+  delay(loop_delay);
 }
