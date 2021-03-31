@@ -27,7 +27,7 @@ byte askAllCompleteMask( byte mask )
   //This is a little inefficient. The first recvs get queried even  after they're done.
   byte rcv=0;
 
-  for (rcv=0;rcv<NUM_RECV;rcv++)
+  for (rcv=1;rcv<=NUM_RECV;rcv++)
   {
     Wire.requestFrom((int)rcv, 1);
     while( Wire.available() )

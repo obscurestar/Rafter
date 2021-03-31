@@ -26,7 +26,7 @@ public:   //public functions.
 private:
   byte extractByte(long lc, signed int which);
   byte pickHueMask();   //Get a new hue mask
-  byte walkPixels();    //The math of the shimmer.
+  bool walkPixels();    //The math of the shimmer.
   
   struct BODY {
     byte hueMask;
@@ -44,7 +44,7 @@ private:
 private:  //class private variables
   byte mHueMask;  //Which bits are active on this iteration.
   bool mDirty;    //Set to true when any RGB not in current set is set for any pixel in chain.
-  bool mDelay;    //Just put this here to avoid namespace pollution.
+  int mDelay;    //Just put this here to avoid namespace pollution.
 };
 
 Rain::Rain()
@@ -61,13 +61,18 @@ void Rain::setup()
   loop_status &= ~SIGNAL1;  //Set loop status to init.
   mDirty=false;
 #ifdef CMDR
-  mHueMask = pickHueMask();
+  mHueMask = pickHueMask();  //Calls sendAll()
+  loop_delay=mDelay;
 #endif
 }
 
 void Rain::render()  //Called from main loop().
 {
-  if (!walkPixels()) 
+  if (!walkPixels()) //If false, still some 'old' colors.
+  {
+    loop_status |= SIGNAL1; //Prep to tell Cmdr we're ready to continue.
+  }
+  else
   {
     //The previous generation is dead.
     //Ask the receivers if their previous generation is also dead.
@@ -77,13 +82,10 @@ void Rain::render()  //Called from main loop().
       Serial.println("All Comp");
       if (!random(mShiftOdds))
       {
+        Serial.println("Shifiting");
         mHueMask = pickHueMask();
       }
     }
-#else
-    //For rcvs set doneness flag for when cmdr calls to ask status.
-    Serial.println("Self Comp");
-    loop_status |= SIGNAL1;
 #endif
   }
 }
@@ -99,6 +101,7 @@ void Rain::receive(int num_bytes)
   receiveBytes(num_bytes, (char *)&b);
   mHueMask = b.hueMask;
   mDelay = b.delayLen;
+  loop_delay = mDelay;
   loop_status &= ~SIGNAL1;  //Set loop status to init.
 }
 #endif
@@ -148,7 +151,7 @@ byte Rain::extractByte(long lc, signed int which)
 }
 
 //Iterate through pixels and stagger around in the relative color space. 
-byte Rain::walkPixels()
+bool Rain::walkPixels()
 {
   mDirty=false;  //Set to true when any RGB not in current set is set for any pixel in chain.
   for (int p=0;p<NUM_LEDS; ++p)  //Loop through pixels.
@@ -191,14 +194,14 @@ void Rain::sendHueChange()
   sprintf(s_buff,"Snd Hue: %d, dly: %d", mHueMask, mDelay);
   Serial.println(s_buff);
   struct MSG msg;
-  msg.h.id = pattern_id;
+  msg.h.id = P_RAIN;
   msg.h.num = sizeof(struct BODY);
   msg.b.hueMask = mHueMask;
   msg.b.delayLen = mDelay;
   
   sendAll( sizeof(struct MSG), (byte *)&msg );  //Notify all the receivers of the change.
+  delay(20); //SPATTERS DEBUG
 }
 #endif
-
 
 #endif //RAIN_H
