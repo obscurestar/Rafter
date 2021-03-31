@@ -50,8 +50,8 @@ private:  //class private variables
 Rain::Rain()
 {
   mHueMask = 0; //Default to OFF.
-  mShiftOdds=200;  //TODO  GET from ui.
-  mDelay=50;
+  mShiftOdds=20;  //TODO  GET from ui.
+  mDelay=0;
 }
 
 void Rain::setup()
@@ -68,7 +68,7 @@ void Rain::setup()
 
 void Rain::render()  //Called from main loop().
 {
-  if (!walkPixels()) //If false, still some 'old' colors.
+  if (walkPixels()) //If false, still some 'old' colors.
   {
     loop_status |= SIGNAL1; //Prep to tell Cmdr we're ready to continue.
   }
@@ -191,6 +191,7 @@ bool Rain::walkPixels()
 //Tell the receivers a new generation has begun.
 void Rain::sendHueChange()
 {
+  //return;
   sprintf(s_buff,"Snd Hue: %d, dly: %d", mHueMask, mDelay);
   Serial.println(s_buff);
   struct MSG msg;
