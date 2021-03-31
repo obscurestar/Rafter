@@ -7,7 +7,7 @@
  *  TODO: Could store the RCVR_ID in progmem and not require the 
  *  RCVR_ID config.
  */
-//#define CMDR /*Comment out this line for recievers*/
+#define CMDR /*Comment out this line for recievers*/
 
 #ifndef CMDR
 #define RCVR
