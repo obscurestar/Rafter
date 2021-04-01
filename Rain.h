@@ -56,27 +56,22 @@ Rain::Rain()
 
 void Rain::setup()
 {
-  //TODO get shift odds from inputs
-  //Setup message to  remotes.
-  loop_status &= ~SIGNAL1;  //Set loop status to init.
-  mDirty=false;
 #ifdef CMDR
+  //TODO get shift odds from inputs
   mHueMask = pickHueMask();  //Calls sendAll()
   loop_delay=mDelay;
+  loop_status &= ~SIGNAL1;  //Set loop status to init.
+  mDirty=false;
 #endif
 }
 
 void Rain::render()  //Called from main loop().
 {
-  if (walkPixels()) //If false, still some 'old' colors.
-  {
-    loop_status |= SIGNAL1; //Prep to tell Cmdr we're ready to continue.
-  }
-  else
+  if (walkPixels())
   {
     //The previous generation is dead.
-    //Ask the receivers if their previous generation is also dead.
 #ifdef CMDR
+    //Once cmdr's generation is dead, start querying receivers
     if ( askAllCompleteMask( SIGNAL1 ) )
     {
       Serial.println("All Comp");
@@ -87,6 +82,7 @@ void Rain::render()  //Called from main loop().
       }
     }
 #endif
+    loop_status |= SIGNAL1; //Prep to tell Cmdr we're ready to continue.
   }
 }
 
@@ -108,7 +104,7 @@ void Rain::receive(int num_bytes)
 
 byte Rain::pickHueMask()
 {
-  //TODO update recievers at end of pick!
+#ifdef CMDR
   //TODO pass in exclude_bit.
   byte exclude_bit = 2;
   
@@ -122,8 +118,9 @@ byte Rain::pickHueMask()
     cbits = ~cbits;  // ~ is the complimentary operator 010 becomes 101 etc
   }
 
-#ifdef CMDR
   sendHueChange();
+#else
+  cbits = mHueMask; //This is controlled by cmdr.
 #endif
 
   return cbits;
