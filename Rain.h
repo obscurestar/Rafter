@@ -95,8 +95,13 @@ void Rain::receive(int num_bytes)
     Serial.println("ERR");
   }
   receiveBytes(num_bytes, (char *)&b);
+
   mHueMask = b.hueMask;
   mDelay = b.delayLen;
+  
+  sprintf(s_buff,"RCV mask %d, delay %d", mHueMask, mDelay);
+  Serial.println(s_buff);
+  
   loop_delay = mDelay;
   loop_status &= ~SIGNAL1;  //Set loop status to init.
 }
@@ -104,11 +109,11 @@ void Rain::receive(int num_bytes)
 
 byte Rain::pickHueMask()
 {
-#ifdef CMDR
   //TODO pass in exclude_bit.
   byte exclude_bit = 2;
   
   byte cbits=random(6)+1;  //generate value from 1-6 this excludes 0(black) and 1(white)
+#ifdef CMDR
 
   /*If the result is purely our exclude bit, let's make it a 1 in n chance that we decide to 
    * keep it.  Otherwise, just invert the byte selection.
@@ -171,6 +176,12 @@ bool Rain::walkPixels()
       {                       //Stagger towards 0, let iterator know this one doesn't count. 
         if (pc.c[c] > 0) //This RGB should not be set in this hue. Still draining previous color
         {
+          if (!mDirty)
+          {
+            sprintf(s_buff,"%d dirty", p);
+            Serial.println(s_buff);
+          }
+
           mDirty=true;
           if (!random(6))
           {
@@ -189,13 +200,15 @@ bool Rain::walkPixels()
 void Rain::sendHueChange()
 {
   //return;
-  sprintf(s_buff,"Snd Hue: %d, dly: %d", mHueMask, mDelay);
-  Serial.println(s_buff);
+
   struct MSG msg;
   msg.h.id = P_RAIN;
   msg.h.num = sizeof(struct BODY);
   msg.b.hueMask = mHueMask;
   msg.b.delayLen = mDelay;
+  
+  sprintf(s_buff,"Snd Hue: %d, dly: %d", msg.b.hueMask, msg.b.delayLen);
+  Serial.println(s_buff);
   
   sendAll( sizeof(struct MSG), (byte *)&msg );  //Notify all the receivers of the change.
   delay(20); //SPATTERS DEBUG

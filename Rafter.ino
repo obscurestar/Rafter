@@ -7,14 +7,14 @@
  *  TODO: Could store the RCVR_ID in progmem and not require the 
  *  RCVR_ID config.
  */
-#define CMDR /*Comment out this line for recievers*/
+//#define CMDR /*Comment out this line for recievers*/
 
 #ifndef CMDR
 #define RCVR
 /*If this unit is a receiver, set the RCVR_ID to a sequential number
  * starting with 1 as the first receiver.  0 appears to be reserved.
  */
-byte RCVR_ID = 3;
+byte RCVR_ID = 1;
 #endif
 /*****************END CONFIGURATION BLOCK**************/
 const int SDI = 2;          //Serial PIN Red wire (not the red 5v wire) 
