@@ -31,7 +31,7 @@ void RecvCallbackFunc(int Press)
   if (hdr.id != pattern_id) //The user requested a pattern change. 
   {
     //TODO clear some or all status here.
-    loop_status |= PATTERN_CHANGE;
+    loop_status |= FORCE_SETUP;
     new_pattern_id  = hdr.id;
     sprintf(s_buff,"New pat: %d", new_pattern_id);
     Serial.println(s_buff);

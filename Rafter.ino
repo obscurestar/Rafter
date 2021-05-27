@@ -7,7 +7,7 @@
  *  TODO: Could store the RCVR_ID in progmem and not require the 
  *  RCVR_ID config.
  */
-//#define CMDR /*Comment out this line for recievers*/
+#define CMDR /*Comment out this line for recievers*/
 
 #ifndef CMDR
 #define RCVR
@@ -153,16 +153,17 @@ void loop()
   }
 
   //Don't do teardown on first run to avoid confusing receivers.
-  if ( loop_status & PATTERN_CHANGE & ~FIRST_RUN )
+  if ( loop_status & (PATTERN_CHANGE | FORCE_SETUP) & ~FIRST_RUN )
   {
     pattern[ pattern_id ]->teardown();
   }
 
-  if ( loop_status & PATTERN_CHANGE )
+  if ( loop_status & (PATTERN_CHANGE | FORCE_SETUP) )
   {
     Serial.println("do setup");
+    
     //Teardown complete we're now on the new pattern.
-    //WARN potential bug here in recvrs if interrupt timing sucks.
+    loop_status &= ~FORCE_SETUP;
     pattern_id = new_pattern_id;
  
     pattern[ pattern_id ]->setup();

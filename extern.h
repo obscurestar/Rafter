@@ -19,7 +19,7 @@ typedef struct HEADER_S
 enum {
     FIRST_RUN      = 1 << 0, //This is the first run.
     PATTERN_CHANGE = 1 << 1, //The pattern has changed.
-    SETUP_COMPLETE = 1 << 2, //Setup
+    FORCE_SETUP = 1 << 2, //Received setup mid-loop. Force it.
     TEARDOWN_COMPLETE = 1 << 3, //Teardown completed.
     SIGNAL1 = 1 << 4,         //Signal defined by Pattern subclass.
   };
