@@ -32,6 +32,7 @@ const int CKI = 3;          //Clock PIN Green wire
 #include "Solid.h"
 #include "Randoms.h"
 #include "render.h"   //The  algorithms that  set  the LED colors.
+#include "ui.h"
 
 //Globals
 const byte NUM_RECV=3;      //Number of receivers to address
@@ -40,7 +41,7 @@ const int S_BUFF_LEN=80;    //Serial buffer length
 
 byte pattern_id;
 byte new_pattern_id;
-byte loop_status = FIRST_RUN | PATTERN_CHANGE;
+byte loop_status = PATTERN_CHANGE;
 char s_buff[S_BUFF_LEN];    //Serial buffer
 int loop_delay=0;           //How long to display a frame.
 
@@ -79,66 +80,7 @@ void setup()
   pattern_id = new_pattern_id = P_SOLID;  //Start simple. 
 }
 
-int readNum(int &result)
-{
-  int index=0;
-  int dat;
-  while (Serial.available() > 0 && index < (S_BUFF_LEN - 1))
-  {
-    dat=Serial.read();
 
-    s_buff[index] = (unsigned char)dat;
-    //s_buff[index] = Serial.read();
-    if ( isdigit(s_buff[index]) )
-    {
-      index++;
-    }
-    else
-    {
-      if (index > 0) break;
-    }
-  }
-  s_buff[index] = '\0';
-  result = atoi(s_buff);
-  return index;
-}
-
-void flushSerial()
-{
-  while(Serial.available())
-    s_buff[0] = Serial.read();
-  return;
-}
-
-void handleInputs()
-{
-  char dat;
-  if (Serial.available() > 0) {
-    // read the incoming byte:
-    dat = Serial.read();
-
-    switch(dat){
-      case 'R':   //Rain
-        new_pattern_id = P_RAIN;
-        break;
-      case 'c':   //Solid color
-        new_pattern_id = P_SOLID;
-        loop_status |= PATTERN_CHANGE; //Force a change
-        break;
-      case 'r':   //Random
-        new_pattern_id = P_RANDOMS;
-        break;
-      case 'q':   //Moving rainbow
-        break;
-      case 'C':   //chase
-        break;
-      default:    //Bail out.
-        return;
-    }
-    sprintf(s_buff,"Pat: %c %d %d",dat, pattern_id, new_pattern_id);
-    Serial.println(s_buff);
-  }  
-}
 /*Main loop**************************************************************************************/
 void loop() 
 {
@@ -153,19 +95,12 @@ void loop()
   }
 
   //Don't do teardown on first run to avoid confusing receivers.
-  if ( loop_status & (PATTERN_CHANGE | FORCE_SETUP) & ~FIRST_RUN )
+  if ( loop_status & PATTERN_CHANGE )
   {
     pattern[ pattern_id ]->teardown();
-  }
-
-  if ( loop_status & (PATTERN_CHANGE | FORCE_SETUP) )
-  {
-    Serial.println("do setup");
-    
-    //Teardown complete we're now on the new pattern.
-    loop_status &= ~FORCE_SETUP;
-    pattern_id = new_pattern_id;
  
+    pattern_id = new_pattern_id; //Switch to new pattern
+    Serial.println("do setup");
     pattern[ pattern_id ]->setup();
   }
 
@@ -180,6 +115,6 @@ void loop()
   raster_post();
 
   //Clear first run and pattern change status
-  loop_status &= ~ (FIRST_RUN|PATTERN_CHANGE);
+  loop_status &= ~ PATTERN_CHANGE;
   delay(loop_delay);
 }

@@ -20,7 +20,7 @@ void sendAll(int msgLen, byte* msg)   //Sends the message to all receivers.
   }
 }
 
-byte askAllCompleteMask( byte mask )
+byte askAllTrueMask( byte mask )
 {
   //Until we need more sophisticated responses, let's assume a  bitmask is our ack
   //If all the flags in the mask are set on all the receivers return t else f.
@@ -33,9 +33,11 @@ byte askAllCompleteMask( byte mask )
     while( Wire.available() )
     {
       if ( ! ( mask & Wire.read() ) ) 
+      {
         sprintf(s_buff,"Unit %d !comp", rcv);
         Serial.println(s_buff);
         return false;
+      }
     }
   }
   return true;

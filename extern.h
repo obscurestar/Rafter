@@ -17,11 +17,10 @@ typedef struct HEADER_S
 }  __attribute__((packed)) HEADER;
 
 enum {
-    FIRST_RUN      = 1 << 0, //This is the first run.
-    PATTERN_CHANGE = 1 << 1, //The pattern has changed.
-    FORCE_SETUP = 1 << 2, //Received setup mid-loop. Force it.
-    TEARDOWN_COMPLETE = 1 << 3, //Teardown completed.
-    SIGNAL1 = 1 << 4,         //Signal defined by Pattern subclass.
+    PATTERN_CHANGE    = 1 << 0, //The pattern has changed.
+    RECVD_NEW_PATTERN = 1 << 1, //Received new pattern
+    TEARDOWN_COMPLETE = 1 << 2, //Teardown completed.
+    SETUP_COMPLETE    = 1 << 3,    //Setup we asked for is done.
   };
 
 enum {
@@ -46,6 +45,8 @@ extern char s_buff[];
 extern int loop_delay;
 
 extern int readNum(int &result);
+extern void flushSerial();
+extern void handleInputs();
 
 #ifdef RCVR
 void RecvCallbackFunc(int Press);

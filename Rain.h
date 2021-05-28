@@ -43,7 +43,6 @@ private:
 
 private:  //class private variables
   byte mHueMask;  //Which bits are active on this iteration.
-  bool mDirty;    //Set to true when any RGB not in current set is set for any pixel in chain.
   int mDelay;    //Just put this here to avoid namespace pollution.
 };
 
@@ -60,8 +59,6 @@ void Rain::setup()
   //TODO get shift odds from inputs
   mHueMask = pickHueMask();  //Calls sendAll()
   loop_delay=mDelay;
-  loop_status &= ~SIGNAL1;  //Set loop status to init.
-  mDirty=false;
 #endif
 }
 
@@ -70,9 +67,11 @@ void Rain::render()  //Called from main loop().
   if (walkPixels())
   {
     //The previous generation is dead.
+    loop_status |= SETUP_COMPLETE; //Prep to tell Cmdr we're ready to continue.
+
 #ifdef CMDR
     //Once cmdr's generation is dead, start querying receivers
-    if ( askAllCompleteMask( SIGNAL1 ) )
+    if ( askAllTrueMask( SETUP_COMPLETE ) )
     {
       Serial.println("All Comp");
       if (!random(mShiftOdds))
@@ -82,7 +81,6 @@ void Rain::render()  //Called from main loop().
       }
     }
 #endif
-    loop_status |= SIGNAL1; //Prep to tell Cmdr we're ready to continue.
   }
 }
 
@@ -103,7 +101,7 @@ void Rain::receive(int num_bytes)
   Serial.println(s_buff);
   
   loop_delay = mDelay;
-  loop_status &= ~SIGNAL1;  //Set loop status to init.
+  loop_status &= ~SETUP_COMPLETE;  //Set loop status to init.
 }
 #endif
 
@@ -155,7 +153,7 @@ byte Rain::extractByte(long lc, signed int which)
 //Iterate through pixels and stagger around in the relative color space. 
 bool Rain::walkPixels()
 {
-  mDirty=false;  //Set to true when any RGB not in current set is set for any pixel in chain.
+  byte in_transition=false;  //Set to true when any RGB not in current set is set for any pixel in chain.
   for (int p=0;p<NUM_LEDS; ++p)  //Loop through pixels.
   {
     for (int c=0;c<3;++c)     //Loop through RBG sub-pixels of each pixel.
@@ -176,13 +174,13 @@ bool Rain::walkPixels()
       {                       //Stagger towards 0, let iterator know this one doesn't count. 
         if (pc.c[c] > 0) //This RGB should not be set in this hue. Still draining previous color
         {
-          if (!mDirty)
+          if (!in_transition)
           {
             sprintf(s_buff,"%d dirty", p);
             Serial.println(s_buff);
           }
 
-          mDirty=true;
+          in_transition=true;
           if (!random(6))
           {
             pc.c[c] --; //Wander slowly towards 0.
@@ -192,7 +190,7 @@ bool Rain::walkPixels()
       }
     }
   }
-  return mDirty;
+  return !in_transition;
 }
 
 #ifdef CMDR
