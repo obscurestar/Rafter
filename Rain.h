@@ -4,6 +4,8 @@
 #ifndef RAIN_H  //These preprocessor directives let you include without worrying about dupes.
 #define RAIN_H  //Once defined it doesn't need to be re-included.
 
+const int WANDER_ODDS=6;   //1:n odds of decreasing dirty color.
+
 #include "extern.h"
 #include "i2c_cmd.h"
 #include "pattern.h"
@@ -49,8 +51,8 @@ private:  //class private variables
 Rain::Rain()
 {
   mHueMask = 0; //Default to OFF.
-  mShiftOdds=20;  //TODO  GET from ui.
-  mDelay=0;
+  mShiftOdds=30;  //TODO  GET from ui.
+  mDelay=10;
 }
 
 void Rain::setup()
@@ -73,7 +75,6 @@ void Rain::render()  //Called from main loop().
     //Once cmdr's generation is dead, start querying receivers
     if ( askAllTrueMask( SETUP_COMPLETE ) )
     {
-      Serial.println("All Comp");
       if (!random(mShiftOdds))
       {
         Serial.println("Shifiting");
@@ -97,7 +98,7 @@ void Rain::receive(int num_bytes)
   mHueMask = b.hueMask;
   mDelay = b.delayLen;
   
-  sprintf(s_buff,"RCV mask %d, delay %d", mHueMask, mDelay);
+  sprintf(s_buff,"RCV hue %d, delay %d", mHueMask, mDelay);
   Serial.println(s_buff);
   
   loop_delay = mDelay;
@@ -174,14 +175,13 @@ bool Rain::walkPixels()
       {                       //Stagger towards 0, let iterator know this one doesn't count. 
         if (pc.c[c] > 0) //This RGB should not be set in this hue. Still draining previous color
         {
-          if (!in_transition)
-          {
-            sprintf(s_buff,"%d dirty", p);
-            Serial.println(s_buff);
-          }
-
+//          if (!in_transition)
+//          {
+//            sprintf(s_buff,"%d dirty", p);
+//            Serial.println(s_buff);
+//          }
           in_transition=true;
-          if (!random(6))
+          if (!random(WANDER_ODDS))
           {
             pc.c[c] --; //Wander slowly towards 0.
             pixel[p].l = pc.l;
@@ -209,7 +209,7 @@ void Rain::sendHueChange()
   Serial.println(s_buff);
   
   sendAll( sizeof(struct MSG), (byte *)&msg );  //Notify all the receivers of the change.
-  delay(20); //SPATTERS DEBUG
+  delay(10); //SPATTERS DEBUG
 }
 #endif
 

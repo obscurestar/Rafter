@@ -34,8 +34,8 @@ byte askAllTrueMask( byte mask )
     {
       if ( ! ( mask & Wire.read() ) ) 
       {
-        sprintf(s_buff,"Unit %d !comp", rcv);
-        Serial.println(s_buff);
+//        sprintf(s_buff,"Unit %d !comp", rcv);
+//        Serial.println(s_buff);
         return false;
       }
     }
