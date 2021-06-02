@@ -27,7 +27,8 @@ enum {
     //DANGER!  This enum MUST be the same order as the Pattern array
     P_SOLID,    //Solid color
     P_RANDOMS,   //Random colors
-    P_RAIN
+    P_RAIN,     //Rain algorithm
+    P_PRIDE
 };
 
 extern const byte NUM_RECV;     //Number of receivers to address

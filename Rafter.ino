@@ -31,6 +31,7 @@ const int CKI = 3;          //Clock PIN Green wire
 #include "Rain.h"
 #include "Solid.h"
 #include "Randoms.h"
+#include "Pride.h"
 #include "render.h"   //The  algorithms that  set  the LED colors.
 #include "ui.h"
 
@@ -46,7 +47,7 @@ char s_buff[S_BUFF_LEN];    //Serial buffer
 int loop_delay=0;           //How long to display a frame.
 
 //std::vector<Pattern> pattern;  MUST be same order as Pattern Enum in externs!
-Pattern* pattern[]  = { new Solid(), new Randoms, new Rain };
+Pattern* pattern[]  = { new Solid(), new Randoms, new Rain, new Pride };
 //pattern[P_RANDOMS] = new Randoms;
 COLOR pixel[NUM_LEDS];      //The color state data for each pixel.
 

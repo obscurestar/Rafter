@@ -7,16 +7,21 @@
 
 #include "extern.h"
 
+void sendTo(byte rcv, int msgLen, byte* msg) //Sends the message to a receiver.
+{
+  Wire.beginTransmission(rcv);
+  Wire.beginTransmission(rcv);
+  Wire.write(msg,msgLen);
+  Wire.endTransmission();
+}
+
 void sendAll(int msgLen, byte* msg)   //Sends the message to all receivers.
 {
   //unsigned char *b = (unsigned char *)&a;
-  byte rcv=0;
+  byte rcv;
   for (rcv=1;rcv<=NUM_RECV;rcv++)
   {
-    Wire.beginTransmission(rcv);
-    Wire.beginTransmission(rcv);
-    Wire.write(msg,msgLen);
-    Wire.endTransmission();
+    sendTo(rcv, msg, msgLen);
   }
 }
 

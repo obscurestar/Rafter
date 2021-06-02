@@ -56,7 +56,10 @@ void handleInputs()
       case 'r':   //Random
         new_pattern_id = P_RANDOMS;
         break;
+      case 'P':   //Pride
+      case 'p':
       case 'q':   //Moving rainbow
+        new_pattern_id = P_PRIDE;
         break;
       case 'C':   //chase
         break;
