@@ -46,8 +46,8 @@ void Solid::setup()
   msg.h.id = P_SOLID;
   msg.h.num = sizeof(struct BODY);
   msg.b.col = mColor;
-  sprintf(s_buff,"RGB: %d %d %d", mColor.c[0], mColor.c[1], mColor.c[2]);
-  Serial.println(s_buff);
+//  sprintf(s_buff,"RGB: %d %d %d", mColor.c[0], mColor.c[1], mColor.c[2]);
+//  Serial.println(s_buff);
   sendAll( sizeof(struct MSG), (byte *)&msg );  //Notify all the receivers of the change.
 
 #endif
@@ -66,14 +66,14 @@ void Solid::render()
 void Solid::receive(int num_bytes)
 {
   struct BODY b;
-  if (num_bytes != sizeof(b))
-  {
-    Serial.println("ERR");
-  }
+//  if (num_bytes != sizeof(b))
+//  {
+//    Serial.println("ERR");
+//  }
   receiveBytes(num_bytes, (char *)&b);
   mColor.l = b.col.l;
-  sprintf(s_buff,"RCVD RGB: %d %d %d", mColor.c[0], mColor.c[1], mColor.c[2]);
-  Serial.println(s_buff);
+//  sprintf(s_buff,"RCVD RGB: %d %d %d", mColor.c[0], mColor.c[1], mColor.c[2]);
+//  Serial.println(s_buff);
 }
 #endif
 

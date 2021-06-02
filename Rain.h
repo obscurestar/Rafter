@@ -77,7 +77,7 @@ void Rain::render()  //Called from main loop().
     {
       if (!random(mShiftOdds))
       {
-        Serial.println("Shifiting");
+ //       Serial.println("Shifiting");
         mHueMask = pickHueMask();
       }
     }
@@ -89,17 +89,17 @@ void Rain::render()  //Called from main loop().
 void Rain::receive(int num_bytes)
 {
   struct BODY b;
-  if (num_bytes != sizeof(b))
-  {
-    Serial.println("ERR");
-  }
+//  if (num_bytes != sizeof(b))
+//  {
+//    Serial.println("ERR");
+//  }
   receiveBytes(num_bytes, (char *)&b);
 
   mHueMask = b.hueMask;
   mDelay = b.delayLen;
   
-  sprintf(s_buff,"RCV hue %d, delay %d", mHueMask, mDelay);
-  Serial.println(s_buff);
+//  sprintf(s_buff,"RCV hue %d, delay %d", mHueMask, mDelay);
+//  Serial.println(s_buff);
   
   loop_delay = mDelay;
   loop_status &= ~SETUP_COMPLETE;  //Set loop status to init.
@@ -205,11 +205,11 @@ void Rain::sendHueChange()
   msg.b.hueMask = mHueMask;
   msg.b.delayLen = mDelay;
   
-  sprintf(s_buff,"Snd Hue: %d, dly: %d", msg.b.hueMask, msg.b.delayLen);
-  Serial.println(s_buff);
+//  sprintf(s_buff,"Snd Hue: %d, dly: %d", msg.b.hueMask, msg.b.delayLen);
+//  Serial.println(s_buff);
   
   sendAll( sizeof(struct MSG), (byte *)&msg );  //Notify all the receivers of the change.
-  delay(10); //SPATTERS DEBUG
+  delay(10); //DEBUG
 }
 #endif
 

@@ -86,7 +86,7 @@ void Pride::setPixelColors(COLOR a, COLOR b)
 
 void Pride::render()
 {
-  delay(1);
+  loop_delay = 1;
 #ifdef CMDR
   int i;
   byte ci[2];

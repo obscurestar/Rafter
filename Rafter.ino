@@ -101,7 +101,7 @@ void loop()
     pattern[ pattern_id ]->teardown();
  
     pattern_id = new_pattern_id; //Switch to new pattern
-    Serial.println("do setup");
+//    Serial.println("do setup");
     pattern[ pattern_id ]->setup();
   }
 
