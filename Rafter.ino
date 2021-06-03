@@ -21,7 +21,14 @@ const int SDI = 2;          //Serial PIN Red wire (not the red 5v wire)
 const int CKI = 3;          //Clock PIN Green wire
 
 #ifdef CMDR
+#include "ui.h"
 #include "i2c_cmd.h"
+#include <SoftwareSerial.h>  //Bluetooth
+const int BT_TX = 4;        //Bluetooth transmit pin
+const int BT_RX = 5;        //Bluetooth recieve pin
+byte COM_CHANNEL = COM_NONE; //No communications active.
+
+SoftwareSerial BlueSerial(BT_RX, BT_TX);
 #else
 #include "i2c_rcv.h"
 #endif 
@@ -33,7 +40,6 @@ const int CKI = 3;          //Clock PIN Green wire
 #include "Randoms.h"
 #include "Pride.h"
 #include "render.h"   //The  algorithms that  set  the LED colors.
-#include "ui.h"
 
 //Globals
 const byte NUM_RECV=3;      //Number of receivers to address
@@ -66,8 +72,8 @@ void setup()
 
 #ifdef CMDR
   Wire.begin(); // join I2C bus (address here is optional for master)
-  //Wire.setClock(400000);   #4x speed boost but write good code first.
-  
+  //Wire.setClock(400000);   //4x speed boost but write good code first.
+  BlueSerial.begin(9600);     //Only start bluetooth on commander.
   Serial.println("CMDR");
 #else
   Wire.begin(RCVR_ID);                                // Join I2C bus as a listener
@@ -79,6 +85,7 @@ void setup()
 #endif
 
   pattern_id = new_pattern_id = P_SOLID;  //Start simple. 
+  COM_CHANNEL=COM_NONE;
 }
 
 
@@ -86,7 +93,7 @@ void setup()
 void loop() 
 {
 #ifdef CMDR
-  handleInputs();
+  handleInputs();  //Checks for user input.
 #endif
 
   //New pattern_id may be changed by handleInputs() in cmdr or 
@@ -106,7 +113,8 @@ void loop()
   }
 
 #ifdef CMDR
-  flushSerial();   //Do this here.
+  //Flush remaining input buffer for bluetooth and serial.
+  flushUIBuffer();
 #endif
 
   //Whatever this pattern is going to do to generate its display, do it.
@@ -117,5 +125,6 @@ void loop()
 
   //Clear first run and pattern change status
   loop_status &= ~ PATTERN_CHANGE;
+  COM_CHANNEL=COM_NONE;       //Clear com channel.
   delay(loop_delay);
 }

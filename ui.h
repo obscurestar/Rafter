@@ -1,5 +1,6 @@
 /*ui.h
  * Routines related to getting input from the user.
+ * PLEASE NOTE:  This file is only included for the CMDR, not receivers.
  */
  
 #ifndef UI_H
@@ -7,16 +8,32 @@
 
 #include "extern.h"
 
+bool UIisAvailable(byte channel)
+{
+  if (channel==COM_NONE) return false;
+  if (channel==COM_BLUE)
+  {
+    return  BlueSerial.available();
+  }
+  return Serial.available();
+}
+
+byte UIRead()
+{
+  if (COM_CHANNEL == COM_NONE) return 0;
+  if (COM_CHANNEL == COM_SERIAL) return Serial.read();
+  return BlueSerial.read();
+}
 int readNum(int &result)
 {
   int index=0;
   int dat;
-  while (Serial.available() > 0 && index < (S_BUFF_LEN - 1))
+  while (UIisAvailable(COM_CHANNEL) > 0 && index < (S_BUFF_LEN - 1))
   {
-    dat=Serial.read();
+    //dat=Serial.read();
 
-    s_buff[index] = (unsigned char)dat;
-    //s_buff[index] = Serial.read();
+    //s_buff[index] = (unsigned char)dat;
+    s_buff[index] = UIRead();
     if ( isdigit(s_buff[index]) )
     {
       index++;
@@ -31,19 +48,21 @@ int readNum(int &result)
   return index;
 }
 
-void flushSerial()
+void flushUIBuffer()
 {
-  while(Serial.available())
-    s_buff[0] = Serial.read();
+  while(UIisAvailable(COM_CHANNEL))
+    s_buff[0] = UIRead();
+  COM_CHANNEL=COM_NONE;         //Input stream is voided, go back to neutral state.
   return;
 }
 
-void handleInputs()
+bool handleInputsByType(byte channel)
 {
   char dat;
-  if (Serial.available() > 0) {
+  if (UIisAvailable(channel) > 0) {
     // read the incoming byte:
-    dat = Serial.read();
+    COM_CHANNEL = channel;
+    dat = UIRead();
 
     switch(dat){
       case 'R':   //Rain
@@ -64,11 +83,20 @@ void handleInputs()
       case 'C':   //chase
         break;
       default:    //Bail out.
-        return;
+        return false;
     }
     sprintf(s_buff,"Pat: %c %d %d",dat, pattern_id, new_pattern_id);
     Serial.println(s_buff);
-  }  
+    return true;
+  }
+  return false;
 }
 
+void handleInputs()
+{
+  if (!handleInputsByType(COM_SERIAL))
+  {
+    handleInputsByType(COM_BLUE);
+  }
+}
 #endif UI_H

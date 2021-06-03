@@ -53,6 +53,7 @@ Pride::Pride()
 void Pride::setup()
 {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
   loop_delay=0;   //Set master loop timing.
+  loop_status &= ~SETUP_COMPLETE;
 #ifdef CMDR
   mColIndex = 0;
   mStepNum = 0;
@@ -143,8 +144,9 @@ void Pride::render()
 }
 
 #ifdef RCVR
-void Solid::receive(int num_bytes)
+void Pride::receive(int num_bytes)
 {
+  loop_status &= ~SETUP_COMPLETE;
   struct BODY b;
   if (num_bytes != sizeof(b))
   {
@@ -152,6 +154,7 @@ void Solid::receive(int num_bytes)
   }
   receiveBytes(num_bytes, (char *)&b);
   setPixelColors(b.col[0], b.col[1]);
+  loop_status |= SETUP_COMPLETE;
 }
 #endif
 

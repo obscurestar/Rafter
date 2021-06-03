@@ -45,11 +45,21 @@ extern const int S_BUFF_LEN;
 extern char s_buff[];
 extern int loop_delay;
 
+#ifdef CMDR
+enum {
+  COM_NONE = 0,
+  COM_SERIAL= 1,
+  COM_BLUE
+};
+extern byte COM_CHANNEL;
+#include <SoftwareSerial.h>
+extern SoftwareSerial BlueSerial;
 extern int readNum(int &result);
 extern void flushSerial();
 extern void handleInputs();
-
-#ifdef RCVR
+extern bool UIisAvailable(byte channel);
+extern byte UIRead();
+#else
 void RecvCallbackFunc(int Press);
 void ReqCallbackFunc();
 int receiveBytes(int num, byte* dest);
