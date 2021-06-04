@@ -40,19 +40,23 @@ class Pride : public Pattern
 
 Pride::Pride()
 {
-  //Doing mColor[0].c[0] = red_val; mColor[0].c[1] = grn_val; etc 
-  //is too tedious. Bitshift for great justice!
-  mColors[0].l = 255 << 24;  //Red
-  mColors[1].l = (255 << 24) + (127 << 16); //Orange
-  mColors[2].l = (255 << 24) + (255 << 16); //Yellow
-  mColors[3].l = (255 << 16); //Green
-  mColors[4].l = (255 << 8); //Blue
-  mColors[5].l = (127 << 24) + (127 << 8); //Purple  
+  mColors[0].l = makeLC(255,0,0);     //red
+  mColors[1].l = makeLC(255,127,0);   //orange
+  mColors[2].l = makeLC(255,255,0);   //yellow
+  mColors[3].l = makeLC(0,255,0);     //green
+  mColors[4].l = makeLC(0,0,255);     //blue
+  mColors[5].l = makeLC(127,0,127);   //purple
 }
 
 void Pride::setup()
-{                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
-  loop_delay=0;   //Set master loop timing.
+{   
+  int i;
+  for(i=0;i<6;++i)
+  {
+    sprintf(s_buff,"PCOL %d:  %d %d %d", i, mColors[i].c[0], mColors[i].c[1], mColors[i].c[2]);
+    Serial.println(s_buff);
+  }
+  loop_delay=20;   //Set master loop timing.
   loop_status &= ~SETUP_COMPLETE;
 #ifdef CMDR
   mColIndex = 0;
@@ -69,7 +73,7 @@ void Pride::setPixelColors(COLOR a, COLOR b)
   int i,c;
 
   sprintf(s_buff,"RNDR: (%d %d %d), (%d %d %d)", a.c[0], a.c[1], a.c[2], b.c[0], b.c[1], b.c[2]);
-  Serial.println(s_buff);
+  //Serial.println(s_buff);
   
   c = NUM_LEDS/2;
   for (i=0;i<NUM_LEDS;++i)

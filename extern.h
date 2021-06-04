@@ -65,4 +65,12 @@ void ReqCallbackFunc();
 int receiveBytes(int num, byte* dest);
 #endif
 
+long makeLC (byte r, byte g, byte b)
+{
+  COLOR tmp;
+  tmp.c[0]=r;
+  tmp.c[1]=g;
+  tmp.c[2]=b;
+  return tmp.l;
+}
 #endif
