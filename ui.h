@@ -13,7 +13,7 @@ bool UIisAvailable(byte channel)
   if (channel==COM_NONE) return false;
   if (channel==COM_BLUE)
   {
-    return  BlueSerial.available();
+    return BlueSerial.available();
   }
   return Serial.available();
 }
