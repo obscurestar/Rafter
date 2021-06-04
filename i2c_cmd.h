@@ -21,7 +21,7 @@ void sendAll(int msgLen, byte* msg)   //Sends the message to all receivers.
   byte rcv;
   for (rcv=1;rcv<=NUM_RECV;rcv++)
   {
-    sendTo(rcv, msg, msgLen);
+    sendTo(rcv, msgLen, msg);
   }
 }
 

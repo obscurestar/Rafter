@@ -7,7 +7,7 @@
  *  TODO: Could store the RCVR_ID in progmem and not require the 
  *  RCVR_ID config.
  */
-#define CMDR /*Comment out this line for recievers*/
+//#define CMDR /*Comment out this line for recievers*/
 
 #ifndef CMDR
 #define RCVR
@@ -16,6 +16,9 @@
  */
 byte RCVR_ID = 3;
 #endif
+
+#include "extern.h"
+
 /*****************END CONFIGURATION BLOCK**************/
 const int SDI = 2;          //Serial PIN Red wire (not the red 5v wire) 
 const int CKI = 3;          //Clock PIN Green wire
@@ -39,7 +42,6 @@ SoftwareSerial BlueSerial(BT_RX, BT_TX);
 #include "Solid.h"
 #include "Randoms.h"
 #include "Pride.h"
-#include "render.h"   //The  algorithms that  set  the LED colors.
 
 //Globals
 const byte NUM_RECV=3;      //Number of receivers to address
@@ -75,6 +77,7 @@ void setup()
   //Wire.setClock(400000);   //4x speed boost but write good code first.
   BlueSerial.begin(9600);     //Only start bluetooth on commander.
   Serial.println("CMDR");
+  COM_CHANNEL=COM_NONE;
 #else
   Wire.begin(RCVR_ID);                                // Join I2C bus as a listener
   Wire.onReceive(RecvCallbackFunc);                  // The commander commands us
@@ -85,7 +88,6 @@ void setup()
 #endif
 
   pattern_id = new_pattern_id = P_SOLID;  //Start simple. 
-  COM_CHANNEL=COM_NONE;
 }
 
 
@@ -125,6 +127,8 @@ void loop()
 
   //Clear first run and pattern change status
   loop_status &= ~ PATTERN_CHANGE;
+#ifdef CMDR
   COM_CHANNEL=COM_NONE;       //Clear com channel.
+#endif
   delay(loop_delay);
 }

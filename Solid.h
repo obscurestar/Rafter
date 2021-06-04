@@ -70,7 +70,7 @@ void Solid::receive(int num_bytes)
 //  {
 //    Serial.println("ERR");
 //  }
-  receiveBytes(num_bytes, (char *)&b);
+  receiveBytes(num_bytes, (byte *)&b);
   mColor.l = b.col.l;
 //  sprintf(s_buff,"RCVD RGB: %d %d %d", mColor.c[0], mColor.c[1], mColor.c[2]);
 //  Serial.println(s_buff);

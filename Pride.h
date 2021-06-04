@@ -152,7 +152,7 @@ void Pride::receive(int num_bytes)
   {
     Serial.println("ERR");
   }
-  receiveBytes(num_bytes, (char *)&b);
+  receiveBytes(num_bytes, (byte *)&b);
   setPixelColors(b.col[0], b.col[1]);
   loop_status |= SETUP_COMPLETE;
 }

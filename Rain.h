@@ -93,7 +93,7 @@ void Rain::receive(int num_bytes)
 //  {
 //    Serial.println("ERR");
 //  }
-  receiveBytes(num_bytes, (char *)&b);
+  receiveBytes(num_bytes, (byte *)&b);
 
   mHueMask = b.hueMask;
   mDelay = b.delayLen;
