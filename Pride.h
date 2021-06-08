@@ -14,7 +14,7 @@
 class Pride : public Pattern
 {
   public:
-    Pride();
+    Pride(char* tokens);
     void setup();
     void render();
     void teardown() {};
@@ -38,7 +38,7 @@ class Pride : public Pattern
     } __attribute__((packed));
  };
 
-Pride::Pride()
+Pride::Pride(char* tokens) : Pattern(tokens)
 {
   mColors[0].l = makeLC(255,0,0);     //red
   mColors[1].l = makeLC(255,127,0);   //orange
@@ -126,7 +126,7 @@ void Pride::render()
     ci[1] = (i * 2 + 1) % 6;
     
     struct MSG msg;
-    msg.h.id = P_PRIDE;
+    msg.h.id = pattern_id;
     msg.h.num = sizeof(struct BODY);
     msg.b.col[0] = col[ci[0]];
     msg.b.col[1] = col[ci[1]];

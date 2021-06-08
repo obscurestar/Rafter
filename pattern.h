@@ -9,11 +9,19 @@
 class Pattern
 {
   public:
+    Pattern(char* tokens) : mTokens(tokens) {};
     virtual void setup() = 0;
     virtual void render() = 0;
     virtual void teardown() = 0;
-#ifdef RCVR
+#ifdef CMDR
+    bool hasToken(char c) { return strchr(mTokens,c); }
+#else
     virtual void receive(int num_bytes) = 0;
+#endif
+
+#ifdef CMDR
+  public:
+    char* mTokens;  //Tokens that match for UI.
 #endif
 };
 

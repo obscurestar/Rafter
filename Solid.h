@@ -11,6 +11,7 @@
 class Solid : public Pattern
 {
   public:
+    Solid(char* tokens):Pattern(tokens){};
     void setup();
     void render();
     void teardown() {};
@@ -43,7 +44,7 @@ void Solid::setup()
   }
   
   struct MSG msg;
-  msg.h.id = P_SOLID;
+  msg.h.id = pattern_id;
   msg.h.num = sizeof(struct BODY);
   msg.b.col = mColor;
 //  sprintf(s_buff,"RGB: %d %d %d", mColor.c[0], mColor.c[1], mColor.c[2]);

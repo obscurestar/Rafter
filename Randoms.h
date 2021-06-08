@@ -11,6 +11,7 @@
 class Randoms : public Pattern
 {
   public:
+    Randoms(char* tokens):Pattern(tokens){};
     void setup();
     void render();
     void teardown() {};
@@ -22,7 +23,7 @@ class Randoms : public Pattern
 void Randoms::setup()
 {
   HEADER h;
-  h.id = P_RANDOMS;
+  h.id = pattern_id;
   h.num=0;
 #ifdef CMDR
   sendAll( sizeof(HEADER), (byte *)&h );

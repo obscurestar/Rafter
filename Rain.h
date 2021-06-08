@@ -13,6 +13,7 @@ const int WANDER_ODDS=6;   //1:n odds of decreasing dirty color.
 class Rain : public Pattern
 {
   public:
+    Rain(char* tokens);
     //The virtuals
     void setup();
     void render();
@@ -23,8 +24,8 @@ class Rain : public Pattern
 
 public:   //public variables.
   int mShiftOdds; //The 1 in n odds of picking a new hue mask.
-public:   //public functions.
-  Rain(); //Default constructor
+//public:   //public functions.
+//  Rain(); //Default constructor
 private:
   byte extractByte(long lc, signed int which);
   byte pickHueMask();   //Get a new hue mask
@@ -48,7 +49,7 @@ private:  //class private variables
   int mDelay;    //Just put this here to avoid namespace pollution.
 };
 
-Rain::Rain()
+Rain::Rain(char* tokens) : Pattern(tokens)
 {
   mHueMask = 0; //Default to OFF.
   mShiftOdds=30;  //TODO  GET from ui.
@@ -200,7 +201,7 @@ void Rain::sendHueChange()
   //return;
 
   struct MSG msg;
-  msg.h.id = P_RAIN;
+  msg.h.id = pattern_id;
   msg.h.num = sizeof(struct BODY);
   msg.b.hueMask = mHueMask;
   msg.b.delayLen = mDelay;

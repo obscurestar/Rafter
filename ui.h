@@ -59,35 +59,26 @@ void flushUIBuffer()
 bool handleInputsByType(byte channel)
 {
   char dat;
-  if (UIisAvailable(channel) > 0) {
+  int i;
+  if (UIisAvailable(channel) > 0)
+  {
     // read the incoming byte:
     COM_CHANNEL = channel;
     dat = UIRead();
 
-    switch(dat){
-      case 'R':   //Rain
-        new_pattern_id = P_RAIN;
-        break;
-      case 'c':   //Solid color
-        new_pattern_id = P_SOLID;
-        loop_status |= PATTERN_CHANGE; //Force a change
-        break;
-      case 'r':   //Random
-        new_pattern_id = P_RANDOMS;
-        break;
-      case 'P':   //Pride
-      case 'p':
-      case 'q':   //Moving rainbow
-        new_pattern_id = P_PRIDE;
-        break;
-      case 'C':   //chase
-        break;
-      default:    //Bail out.
-        return false;
+    for(i=0;i<NUM_PATTERNS;++i)
+    {
+      if(pattern[i]->hasToken(dat))
+      {
+        new_pattern_id = i;
+        loop_status |= PATTERN_CHANGE;
+        
+        sprintf(s_buff,"Pat: %c %d %d",dat, pattern_id, new_pattern_id);
+        Serial.println(s_buff);
+    
+        return true;
+      }
     }
-    sprintf(s_buff,"Pat: %c %d %d",dat, pattern_id, new_pattern_id);
-    Serial.println(s_buff);
-    return true;
   }
   return false;
 }

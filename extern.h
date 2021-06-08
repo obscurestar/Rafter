@@ -44,6 +44,7 @@ extern byte loop_status;
 extern const int S_BUFF_LEN;
 extern char s_buff[];
 extern int loop_delay;
+extern const byte NUM_PATTERNS;
 
 #ifdef CMDR
 enum {

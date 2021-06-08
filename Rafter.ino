@@ -54,9 +54,14 @@ byte loop_status = PATTERN_CHANGE;
 char s_buff[S_BUFF_LEN];    //Serial buffer
 int loop_delay=0;           //How long to display a frame.
 
-//std::vector<Pattern> pattern;  MUST be same order as Pattern Enum in externs!
-Pattern* pattern[]  = { new Solid(), new Randoms, new Rain, new Pride };
-//pattern[P_RANDOMS] = new Randoms;
+const byte NUM_PATTERNS=4;        //The number of Patterns available.
+Pattern* pattern[]  = { 
+  new Solid("cC"),          //Class with cmdln names for this class.
+  new Randoms("r"),
+  new Rain("R"),
+  new Pride("pPqQ")
+};
+
 COLOR pixel[NUM_LEDS];      //The color state data for each pixel.
 
 /*Setup loop************************************************************************************/
